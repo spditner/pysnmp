@@ -18,22 +18,22 @@ class IpAddress(univ.OctetString):
         tag.Tag(tag.tagClassApplication, tag.tagFormatSimple, 0x00)
     )
     subtypeSpec = univ.OctetString.subtypeSpec + constraint.ValueSizeConstraint(
-        4, 4
+        4, 8
     )
 
     def prettyIn(self, value):
-        if isinstance(value, str) and len(value) != 4:
+        if isinstance(value, str) and len(value) != 4 and len(value) !=8:
             try:
                 value = [int(x) for x in value.split('.')]
             except:
                 raise error.ProtocolError('Bad IP address syntax %s' % value)
-        if len(value) != 4:
+        if len(value) != 4 and len(value) != 8:
             raise error.ProtocolError('Bad IP address syntax')
         return univ.OctetString.prettyIn(self, value)
 
     def prettyOut(self, value):
         if value:
-            return '.'.join(['%d' % x for x in self.__class__(value).asNumbers()])
+            return '.'.join(['%d' % x for x in self.__class__(value).asNumbers()][:4])
         else:
             return ''
 
