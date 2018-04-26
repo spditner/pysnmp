@@ -285,25 +285,25 @@ class IpAddress(OctetString):
         tag.Tag(tag.tagClassApplication, tag.tagFormatSimple, 0x00)
     )
     subtypeSpec = OctetString.subtypeSpec + constraint.ValueSizeConstraint(
-        4, 4
+        4, 8
     )
     fixedLength = 4
 
     def prettyIn(self, value):
-        if isinstance(value, str) and len(value) != 4:
+        if isinstance(value, str) and len(value) != 4 and len(value) != 8:
             try:
                 value = [int(x) for x in value.split('.')]
             except:
                 raise error.ProtocolError('Bad IP address syntax %s' % value)
         value = OctetString.prettyIn(self, value)
-        if len(value) != 4:
+        if len(value) != 4 and len(value) != 8:
             raise error.ProtocolError('Bad IP address syntax')
         return value
 
     def prettyOut(self, value):
         if value:
             return '.'.join(
-                ['%d' % x for x in self.__class__(value).asNumbers()]
+                ['%d' % x for x in self.__class__(value).asNumbers()][:4]
             )
         else:
             return ''
